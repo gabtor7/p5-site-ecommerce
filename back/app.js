@@ -12,8 +12,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('../front', express.static(path.join(__dirname, 'front')));
-app.use(express.static('front'));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.static('images'));
 
 app.use(express.urlencoded({extended: true}));
 app.use(express.json());
