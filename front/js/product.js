@@ -1,39 +1,56 @@
+const searchParams = new URLSearchParams(window.location.search);
+const id = searchParams.get('id');
 // chercher l'url 
-fetch("http://localhost:3000/api/products/").then(function(res){
+fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
     if (res.ok) {
         return res.json();
     }
-}).then(function(products){
+}).then(function(product){
     // récupérer id depuis l'url
-    var searchParams = new URLSearchParams( (window.location.search) );
-    var prodId = searchParams.getAll('id');
-    // avec l'id, récupérer le produit correspondant dans le tableau
-    var product = null;
-
-    products.every(prod => {
-        if(prod._id == prodId){
-            product = prod;
-            return false;
-        }
-
-        return true;
-    })
+    console.log(product);
     
     // afficher les éléments aux bons endroits
-    document.querySelector('.item__img').innerHTML += "<img src=" + product.imageUrl + " alt=" + product.name + ">";
+    const img = document.createElement('img');
+    img.setAttribute('src', product.imageUrl);
+    img.setAttribute('alt', product.name);
+    document.querySelector('.item__img').appendChild(img);
 
-    document.getElementById('title').innerHTML += product.name;
-    document.getElementById('price').innerHTML += product.price;
-    document.getElementById('description').innerHTML += product.description;
+    const title = document.getElementById('title');
+    const name = document.createTextNode(product.name);
+    title.appendChild(name);
+    
+    document.getElementById('price').appendChild(document.createTextNode(product.price));
+    document.getElementById('description').appendChild(document.createTextNode(product.description));
     
     // -- pour les couleurs, faire une boucle
-    var prodColors= "";
-    for(i=0; i<product.colors.length; i++){
-        prodColors += "<option value=" + product.colors[i] + ">" + product.colors[i] + "</option>";
-    }
-    
-    document.getElementById('colors').innerHTML += prodColors;
+    let productColors = document.getElementById('colors');
+    for(let i = 0; i < product.colors.length; i++){
+        let option = document.createElement('option');
+        option.value = product.colors[i];
+        option.label = product.colors[i];
 
+        productColors.add(option);
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     //vérifier si click sur addToCart
     const addBtn = document.getElementById('addToCart');
 
