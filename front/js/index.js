@@ -1,30 +1,55 @@
-
-fetch("http://localhost:3000/api/products/").then(function(res){//res = resultat du fetch (liste/tableau des canapés)
-  if(res.ok){
-    return res.json();//resultat converti en tableau depuis le json
+// Appel fetch pour récupérer les produits de l'api
+fetch("http://localhost:3000/api/products")
+.then(function(res) {
+  if (res.ok) {
+    return res.json();
   }
-}).then(function(products){//value = tableau des canapés (un canapé = un objet)
-    
-  var displaySection = document.getElementById("items");
-
-  products.forEach(product => {
-
-    var article = `<a href="product.html?id=` + product._id + `">
-                      <article>
-                        <img src="` + product.imageUrl + `" alt="` + product.altTxt + `">
-                        <h3 class="productName">` + product.name + `</h3>
-                        <p class="productDescription">` + product.description + `</p>
-                      </article>
-                    </a>`;
-
-    displaySection.innerHTML += article;
-    //pour référence ci-dessus
-    /*<a href="./product.html?id=42">
-          <article>
-            <img src=".../product01.jpg" alt="Lorem ipsum dolor sit amet, Kanap name1">
-            <h3 class="productName">Kanap name1</h3>
-            <p class="productDescription">Dis enim malesuada risus sapien gravida nulla nisl arcu. Dis enim malesuada risus sapien gravida nulla nisl arcu.</p>
-          </article>
-        </a> */
-    });
+})
+.then(function(products) {
+  displayProducts(products);
+})
+.catch(function(err) {
+  alert('une erreur est survenue');
 });
+
+function displayProducts(products){
+  
+  let items = document.getElementById('items');
+  
+  products.forEach(product => {
+    
+    items.appendChild(createProduct(product));
+
+  })
+}
+
+function createProduct(product){
+
+  const articleFragment = document.createDocumentFragment();
+  
+  //création d'une node englobant le tout dans un lien
+  const anchor = document.createElement('a');
+  anchor.setAttribute('href', `product.html?id=${product._id}`);
+
+  //création des enfants
+  const article = document.createElement('article');
+  anchor.appendChild(article);
+
+  const img = document.createElement('img');
+  img.setAttribute('src', product.imageUrl);
+  img.setAttribute('alt', product.altTxt);
+
+  const heading = document.createElement('h3');
+  heading.classList.add('productName');
+  heading.innerHTML = product.name;
+
+  const pg = document.createElement('p');
+  pg.classList.add('productDescription');
+  pg.innerHTML = product.description;
+
+  article.appendChild(img);
+  article.appendChild(heading);
+  article.appendChild(pg);
+
+  return anchor;
+}
