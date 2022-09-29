@@ -32,25 +32,6 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
         productColors.add(option);
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     //vérifier si click sur addToCart
     const addBtn = document.getElementById('addToCart');
 
@@ -62,11 +43,15 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
         let qtyOk = false; //product won't be added to cart as long as this is false
 
         if(kanapQty > 100){
+
             alert('Vous ne pouvez pas commander plus de 100 canapés. 100 canapés seront ajoutés à votre panier.');
             kanapQty = 100;
             qtyOk = true;
+
         } else if(kanapQty < 1) {
+
             alert('Merci de bien vouloir saisir une quantité valide.');
+
         } else {
             qtyOk = true;
         }
@@ -74,26 +59,48 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
         //check if a color has been selected
         let kanapColor = document.getElementById('colors').value;
 
+        if( !kanapColor ){
+        
+            alert('Veuillez choisir une couleur de canapé');
+        
+        }
+
         //create the array
         let kanapId = product._id;
 
-        //let strKanapColor = kanapColor.toString();
-        //let strKanapQty = kanapQty.toString(); 
-
         //create item to add to the cart [id: [color: quantity]]
-        let kanapColQty = {kanapColor: kanapQty};
-        let kanapToAdd = {kanapId: kanapColQty};
+        let kanapColQty = {};
 
+        if( qtyOk ){
+        
+            kanapColQty[kanapColor] = kanapQty;
+        
+        } else {
+        
+            alert(kanapQty);
+        
+        }
+
+        let kanapToAdd = {};
+        kanapToAdd[kanapId] = kanapColQty;
+        
         //before adding, check if there is an existing cart in localStorage
         if ( !localStorage.getItem('kanapCart') ){
+            
             //no existing cart was found, so one is created with the current kanap being its first item
             localStorage.setItem('kanapCart', JSON.stringify(kanapToAdd));
+            console.log(kanapCart);
+
         } else {
+            
             //add in localStorage in the existing array
             //get the array from the cart and convert it to JSON format
             let cart = JSON.stringify(localStorage.getItem('kanapCart'));
-
+            let jsonCart = JSON.parse(cart);
+            console.log(jsonCart.json());            
+            
             //run/loop through the cart and check if the ID we're trying to add isn't already in the cart
+
             //it exists: check if the color is the same
             // same color: we add to the quantity
             //  if qty > 100 display a warning and cap the maximum to 100
