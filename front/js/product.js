@@ -39,7 +39,7 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
     addBtn.addEventListener("click", function(){
         //create array containing information about the added sofa id=>[color=>[quantity]]
         //get the quantity, check if amount is correct (between 1 and 100)
-        let kanapQty = document.getElementById('quantity').value;
+        let kanapQty = parseInt(document.getElementById('quantity').value);
         let qtyOk = false; //product won't be added to cart as long as this is false
 
         if(kanapQty > 100){
@@ -75,10 +75,6 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
         
             kanapColQty[kanapColor] = kanapQty;
         
-        } else {
-        
-            alert(kanapQty);
-        
         }
 
         let kanapToAdd = {};
@@ -89,23 +85,38 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
             
             //no existing cart was found, so one is created with the current kanap being its first item
             localStorage.setItem('kanapCart', JSON.stringify(kanapToAdd));
-            console.log(kanapCart);
+            console.log('Produit ajouté au panier');
 
         } else {
             
             //add in localStorage in the existing array
-            //get the array from the cart and convert it to JSON format
-            let cart = JSON.stringify(localStorage.getItem('kanapCart'));
-            let jsonCart = JSON.parse(cart);
-            console.log(jsonCart.json());            
-            
-            //run/loop through the cart and check if the ID we're trying to add isn't already in the cart
 
-            //it exists: check if the color is the same
-            // same color: we add to the quantity
-            //  if qty > 100 display a warning and cap the maximum to 100
-            //  else simply add the desired number to the sum
-            // not the same color: add the object {color: qty}
+            //get the array from the cart and convert it to JSON format
+            let cart = localStorage.getItem('kanapCart');
+            let jsonCart = JSON.parse(cart);
+
+            //check if the ID we're trying to add isn't already in the cart
+            if(  product._id in jsonCart ){
+                console.log('id existant' + jsonCart);
+
+                //it exists: check if the color is the same
+                
+                if( jsonCart[kanapId].hasOwnProperty(kanapColor) ){
+                    let qty = parseInt(jsonCart[kanapId][kanapColor]);
+                    qty += kanapQty;
+                    jsonCart[kanapId][kanapColor] = qty;
+                    console.log(jsonCart);
+                    // same color: we add to the quantity
+                    //  if qty > 100 display a warning and cap the maximum to 100
+                    //  else simply add the desired number to the sum
+
+                } else {
+                    
+                }
+                // not the same color: add the object {color: qty}
+
+            }
+
             //it does not exist, add the whole thing
 
         }
