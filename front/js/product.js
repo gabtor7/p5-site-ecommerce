@@ -7,6 +7,7 @@ fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
     }
 }).then(function(product){
     // récupérer id depuis l'url
+    // --- dans fn --- >>
     console.log(product);
     
     // afficher les éléments aux bons endroits
