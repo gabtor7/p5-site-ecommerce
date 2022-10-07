@@ -153,20 +153,12 @@ function addToCart(cartName, tabAllKanap){
     
 }
 
-
-// function addItemToCart(cartName, item){
-//     // Récupérer le tableau des produits depuis localStorage
-//     let cart = JSON.stringify(localStorage.getItem(cartName));
-//     // Convertir en JSON
-//     let jsonCart = JSON.parse(cart);
-//     // Ajouter le produit au tableau JSON (effectuer vérifications nécessaires)
-
-// }
-
 function checkQtyKanap(kanapToAdd, kanapInCart){
     // On attribuera la somme total au kanapInCart
     if((kanapToAdd.quantity + kanapInCart.quantity) > 100){
         kanapInCart.quantity = 100;
         alert('Vous ne pouvez pas avoir plus de 100 kanap. Les kanap en trop seront ignorés.')
+    } else {
+        kanapInCart.quantity += kanapToAdd.quantity;
     }
 }
