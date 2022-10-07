@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+  <heawd>
     <title>Nom du produit</title>
 
     <meta charset="utf-8">
@@ -46,7 +46,7 @@
       <div class="limitedWidthBlock">
         <section class="item">
           <article>
-            <div class="item__img"> 
+            <div class="item__img">
               <!-- <img src="../images/logo.png" alt="Photographie d'un canapé"> document.querySelector(".item__img") -->
             </div>
             <div class="item__content">
@@ -64,7 +64,7 @@
               <div class="item__content__settings">
                 <div class="item__content__settings__color">
                   <label for="color-select">Choisir une couleur :</label>
-                  <select name="color-select" id="colors">
+                  <select name="color-select" id="color-select">
                       <option value="">--SVP, choisissez une couleur --</option>
 <!--                       <option value="vert">vert</option>
                       <option value="blanc">blanc</option> -->
@@ -73,12 +73,12 @@
 
                 <div class="item__content__settings__quantity">
                   <label for="itemQuantity">Nombre d'article(s) (1-100) :</label>
-                  <input type="number" name="itemQuantity" min="1" max="100" value="0" id="quantity">
+                  <input type="number" id="itemQuantity" name="itemQuantity" min="1" max="100" value="0">
                 </div>
               </div>
 
               <div class="item__content__addButton">
-                <button id="addToCart">Ajouter au panier</button>
+                <button id="addToCart" disabled>Ajouter au panier</button>
               </div>
 
             </div>
@@ -86,7 +86,7 @@
         </section>
       </div>
     </main>
-    
+
     <footer>
       <div class="limitedWidthBlockContainer footerMain">
         <div class="limitedWidthBlock">
