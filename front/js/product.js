@@ -1,8 +1,8 @@
 const searchParams = new URLSearchParams(window.location.search);
 const id = searchParams.get('id');
 let product, colorIsOk, qtyIsOk;
-let jsonCart;
 let allKanaps = [];
+let jsonCart;
 
 const addBtn = document.getElementById('addToCart');
 addBtn.disabled = true;
@@ -72,6 +72,7 @@ async function createProduct() {
     colors.addEventListener('change', () => {
         // Vérifier la selection d'une couleur par l'utilisateur
         if(colors.value){
+            colorIsOk = true;
             enableAddBtn();
         } else {
             alert('Veuillez choisir une couleur de canapé');
@@ -81,20 +82,7 @@ async function createProduct() {
 
 
     // Listening for clicks on the "Add to cart" button
-    addBtn.addEventListener("click", function(){
-        // Create array containing information about the added sofa id=>[color=>[quantity]]
-        // // Create the array
-        // let kanapId = product._id;
-        // // Create item to add to the cart [id: [color: quantity]]
-        // let kanapColQty = [];
-        //
-        // if(qtyOk){
-        //     kanapColQty[kanapColor] = kanapQty;
-        // } else {
-        //     alert(kanapQty);
-        // }
-        // Tableau contenant tous les kanap au fur et à mesure des ajouts dans le panier
-        
+    addBtn.addEventListener("click", function(){       
         let kanap = {
             _id: product._id,
             color: colors.value,
@@ -114,23 +102,7 @@ function processLocalStorage(kanap) {
     addToTab(kanap);
 
     // Vérification et création d'un panier dans le localStorage si il n'y en a pas, puis ajout du produit
-    addToCart('kanapCart', kanap);
-
-    // Si l'objet n'existe pas dans le localStorage, on le crée
-    // A l'inverse, si l'objet existe déjà (id et couleur identiques), dans ce cas on l'ajoute
-
-    // Avant ajout on vérifie l'existence d'un panier dans le localStorage
-    // if (!localStorage.getItem('kanapCart')){
-    //     // Aucun panier trouvé, on en crée un et ajoute le kanap courant
-    //     localStorage.setItem('kanapCart', JSON.stringify(object));
-    //     console.log(kanapCart);
-    // } else {
-    //     // Add in localStorage in the existing array
-    //     // Get the array from the cart and convert it to JSON format
-    //     let cart = JSON.stringify(localStorage.getItem('kanapCart'));
-    //     let jsonCart = JSON.parse(cart);
-    //     console.log(jsonCart.json());
-    // }
+    addToCart('kanapCart', allKanaps);
 }
 
 /**
@@ -139,29 +111,36 @@ function processLocalStorage(kanap) {
  */
 function addToTab(kanap){
     
-    let addToTab = false;
-    jsonCart['products'].forEach(prod => {
-        if(kanap._id == prod._id){
-            if(kanap.color == prod.color){
-                // id et couleur existants (sum de quantité), pas d'ajout, modification du total du kanap existant
-                checkQtyKanap(kanap, prod);
-            } else {
-                // id existe dans le panier mais pas la couleur, on ajoute
-                addToTab = true;
-            }
-        } else {
-            // id non existant dans le panier, on ajoute
-            addToTab = true;
-        }
-    });
-    
-    if(addToTab){
+    if(canBeAdded(kanap)){
         allKanaps.push(kanap);
         jsonCart = {
             'products': allKanaps,
         };
         console.log('Produit ajouté au panier.');
     }
+}
+
+function canBeAdded(kanap){
+    let addToTab = false;
+    if(!jsonCart){
+        addToTab = true;
+    }else{
+        jsonCart['products'].forEach(prod => {
+            if(kanap._id == prod._id){
+                if(kanap.color == prod.color){
+                    // id et couleur existants (sum de quantité), pas d'ajout, modification du total du kanap existant
+                    checkQtyKanap(kanap, prod);
+                } else {
+                    // id existe dans le panier mais pas la couleur, on ajoute
+                    addToTab = true;
+                }
+            } else {
+                // id non existant dans le panier, on ajoute
+                addToTab = true;
+            }
+        });
+    }
+    return addToTab;
 }
 
 /**
