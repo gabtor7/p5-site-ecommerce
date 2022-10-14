@@ -1,25 +1,16 @@
+//import Helpers from './Helpers';
+
 const searchParams = new URLSearchParams(window.location.search);
 const id = searchParams.get('id');
 let product, colorIsOk, qtyIsOk;
-let allKanaps = [];
-let jsonCart;
 
 const addBtn = document.getElementById('addToCart');
-addBtn.disabled = true;
 const quantity = document.getElementById('itemQuantity');
 const colors = document.getElementById('color-select');
 
 function enableAddBtn(){
     if(qtyIsOk && colorIsOk){
         addBtn.disabled = false;
-    }
-
-    if(addBtn.disabled === true){
-        addBtn.style.opacity = '0.7';
-        addBtn.style.pointerEvents = 'none';
-    } else {
-        addBtn.style.opacity = null;
-        addBtn.style.pointerEvents = null;
     }
 }
 
@@ -52,7 +43,6 @@ async function createProduct() {
 
         colors.add(option);
     }
-    enableAddBtn();
 }
 
 (async function init() {
@@ -60,12 +50,14 @@ async function createProduct() {
 
     /********** Event listeners **********/
     quantity.addEventListener('change', () => {
-        if(1 <= quantity.value <= 100){
+        const value = Number(quantity.value);
+
+        if(value > 0 && value < 101){
             qtyIsOk = true;
             enableAddBtn();
         } else {
             alert('Merci de choisir une quantité entre 1 et 100.');
-            return;
+            quantity.value = 1;
         }
     });
 
@@ -76,13 +68,12 @@ async function createProduct() {
             enableAddBtn();
         } else {
             alert('Veuillez choisir une couleur de canapé');
-            return;
         }
     });
 
 
     // Listening for clicks on the "Add to cart" button
-    addBtn.addEventListener("click", function(){       
+    addBtn.addEventListener("click", function(){
         let kanap = {
             _id: product._id,
             color: colors.value,
@@ -90,75 +81,42 @@ async function createProduct() {
         };
 
         processLocalStorage(kanap);
-
-        // when adding to the cart, check if a similar article has been added
-        // if same article but different color: add to the subarray
     });
 })();
 
-function processLocalStorage(kanap) {
-
-    // Ajout du kanap au tableau/panier de kanaps
-    addToTab(kanap);
-
-    // Vérification et création d'un panier dans le localStorage si il n'y en a pas, puis ajout du produit
-    addToCart('kanapCart', allKanaps);
-}
 
 /**
- * Adds the desired kanap to a tab containing all kanaps in the cart
- * @param {Object} kanap - the kanap to be added
+ * Processes localStorage to add a new kanap
+ * 
+ * @param {Object} kanap - the kanap information to be added
  */
-function addToTab(kanap){
-    
-    if(canBeAdded(kanap)){
-        allKanaps.push(kanap);
-        jsonCart = {
-            'products': allKanaps,
-        };
-        console.log('Produit ajouté au panier.');
-    }
-}
+function processLocalStorage(kanap) {
+    let products = getFromLocalStorage();
+    let productCart = products.find(product => product._id === id && product.color === colors.value);
 
-function canBeAdded(kanap){
-    let addToTab = false;
-    if(!jsonCart){
-        addToTab = true;
-    }else{
-        jsonCart['products'].forEach(prod => {
-            if(kanap._id == prod._id){
-                if(kanap.color == prod.color){
-                    // id et couleur existants (sum de quantité), pas d'ajout, modification du total du kanap existant
-                    checkQtyKanap(kanap, prod);
-                } else {
-                    // id existe dans le panier mais pas la couleur, on ajoute
-                    addToTab = true;
-                }
-            } else {
-                // id non existant dans le panier, on ajoute
-                addToTab = true;
-            }
-        });
+    // Vérification et création d'un panier dans le localStorage s'il n'y en a pas, puis ajout du produit
+    if (productCart) {
+        productCart.quantity = productCart.quantity + kanap.quantity;
+    } else {
+        products.push(kanap);
     }
-    return addToTab;
+
+    saveToLocalStorage(products);
 }
 
 /**
  * Adds the whole tab of kanaps to the cart, usually with the new kanap
- * @param {String} cartName - name of the cart in localStorage
- * @param {Array} tabAllKanap - the tab containing all kanaps, will replace the current one
+ * 
+ * @param {Array} products - the tab containing all kanaps, will replace the current one
  */
-function addToCart(cartName, tabAllKanap){
-    localStorage.setItem(cartName, JSON.stringify(tabAllKanap));
-    
+function saveToLocalStorage(products) {
+    localStorage.setItem('kanapCart', JSON.stringify(products));
 }
 
-function checkQtyKanap(kanapToAdd, kanapInCart){
-    // On attribuera la somme total au kanapInCart
-    if((kanapToAdd.quantity + kanapInCart.quantity) > 100){
-        kanapInCart.quantity = 100;
-        alert('Vous ne pouvez pas avoir plus de 100 kanap. Les kanap en trop seront ignorés.')
-    } else {
-        kanapInCart.quantity += kanapToAdd.quantity;
-    }
+function getFromLocalStorage() {
+    return localStorageHasKey() ? JSON.parse(localStorage.getItem('kanapCart')) : [];
+}
+
+function localStorageHasKey() {
+    return localStorage.getItem('kanapCart');
 }

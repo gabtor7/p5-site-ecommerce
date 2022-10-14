@@ -91,9 +91,10 @@
 	box-shadow: rgba(42, 18, 206, 0.9) 0 0 22px 6px;
 }
 
-
-
-
+#addToCart:disabled {
+    opacity: .3;
+    pointer-events: none;
+}
 
 /***************/
 /*Media queries*/
