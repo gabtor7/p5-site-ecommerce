@@ -63,6 +63,7 @@ function displayCartProduct(product, productInCart){
     cartItemDelete.classList.add('cart__item__content__settings__delete');
     const deleteTxt = document.createElement('p');
     deleteTxt.classList.add('deleteItem');
+    deleteTxt.innerHTML = "Supprimer";
     cartItemDelete.appendChild(deleteTxt);
 
     cartItemContentSettings.appendChild(cartItemDelete);

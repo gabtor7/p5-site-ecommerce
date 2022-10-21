@@ -1,4 +1,4 @@
-//import Helpers from './Helpers';
+import { getFromLocalStorage, saveToLocalStorage } from "./helpers.js";
 
 const searchParams = new URLSearchParams(window.location.search);
 const id = searchParams.get('id');
@@ -87,7 +87,7 @@ async function createProduct() {
 
 /**
  * Processes localStorage to add a new kanap
- * 
+ *
  * @param {Object} kanap - the kanap information to be added
  */
 function processLocalStorage(kanap) {
@@ -102,21 +102,4 @@ function processLocalStorage(kanap) {
     }
 
     saveToLocalStorage(products);
-}
-
-/**
- * Adds the whole tab of kanaps to the cart, usually with the new kanap
- * 
- * @param {Array} products - the tab containing all kanaps, will replace the current one
- */
-function saveToLocalStorage(products) {
-    localStorage.setItem('kanapCart', JSON.stringify(products));
-}
-
-function getFromLocalStorage() {
-    return localStorageHasKey() ? JSON.parse(localStorage.getItem('kanapCart')) : [];
-}
-
-function localStorageHasKey() {
-    return localStorage.getItem('kanapCart');
 }
