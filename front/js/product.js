@@ -77,7 +77,7 @@ async function createProduct() {
         let kanap = {
             _id: product._id,
             color: colors.value,
-            quantity: Number(quantity.value)
+            quantity: Number(quantity.value),
         };
 
         processLocalStorage(kanap);
