@@ -61,9 +61,21 @@ let totalNbItems = 0;
             // displayTotalPrice();
             location.reload();
             
-        })
+        });
         
     });
+
+    let firstNameField = document.getElementById('firstName');
+    let firstNameRegEx = /[a-zA-Zàçèé]{2,30}$/; // [\-][a-zA-Zàçèé] gestion des prénoms et noms composés ?
+    //console.log('salut c\'est ' + firstNameRegEx.test('Jean-Paul'));
+    firstNameField.addEventListener('change', () => {
+        if( firstNameRegEx.test(firstNameField.value) ){
+            console.log('good');
+        } else {
+            console.log('not good');
+        }
+    });
+
 })();
 
 /**
@@ -192,7 +204,7 @@ function createItemQuantitySettings(productInCart) {
 }
 
 /**
- * Function updating the number of items in the cart, used when deleting an item or changing its quantity
+ * Updates and displays the number of items in the cart, used when deleting an item or changing its quantity
  */
 function displayAllItems() {
     totalNbItems = 0;
@@ -208,6 +220,9 @@ function displayAllItems() {
     document.getElementById('totalQuantity').innerHTML = totalNbItems;
 }
 
+/**
+ * Updates and displays the total price of the cart
+ */
 function displayTotalPrice(){
     let totalCartPrice = 0;
 
@@ -222,6 +237,13 @@ function displayTotalPrice(){
     document.getElementById('totalPrice').innerHTML = totalCartPrice;
 }
 
+/**
+ * Deletes an item from the DOM and the cart in localStorage
+ * NOTE: the id alone isn't sufficient since there can be several colors for one id in the cart
+ * 
+ * @param {String} productId - the id of the product to be deleted
+ * @param {String} productColor - the color of the product to be deleted
+ */
 function deleteProductFromCart(productId, productColor) {
     // Aussi supprimer l'élément du localStorage (utiliser id)
     const productToDelete = cartProducts.find(product => product._id === productId && product.color === productColor);
@@ -231,4 +253,8 @@ function deleteProductFromCart(productId, productColor) {
     // productsInAPI.splice(index, 1);
     
     saveToLocalStorage(cartProducts);
+}
+
+function regExNameField(){
+
 }
