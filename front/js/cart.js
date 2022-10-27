@@ -3,6 +3,7 @@ import {getFromLocalStorage, localStorageHasKey, saveToLocalStorage} from "./hel
 // Récupération du panier sous forme de json
 const productsInCart = localStorageHasKey() ? getFromLocalStorage() : null;
 let productsInAPI;
+let cartProducts = [];
 let totalNbItems = 0;
 
 (async function createAll() {
@@ -14,8 +15,15 @@ let totalNbItems = 0;
     productsInAPI = await Promise.all(
         arrayIds.map(id => fetch(`http://localhost:3000/api/products/${id}`).then(response => response.json()))
     );
+
+    productsInAPI.forEach((product) => delete product.colors);
+    productsInAPI.forEach((product) => delete product._id);
+
+    // merging des 2 tableaux
+    productsInCart.forEach((product, index) => cartProducts[index] = {...productsInCart[index], ...productsInAPI[index]});
+    console.log(cartProducts);
     
-    productsInAPI.forEach((product, index) => displayCartProduct(productsInAPI[index], productsInCart[index]));
+    cartProducts.forEach((product) => displayCartProduct(product));
     displayAllItems();
     displayTotalPrice();
     
@@ -64,13 +72,13 @@ let totalNbItems = 0;
  * @param {Object} product - product to be displayed
  * @param {Object} productInCart - see above
  */
-function displayCartProduct(product, productInCart){
+function displayCartProduct(product){
     // Création du fragment pour l'article à afficher
     const articleFragment = document.createDocumentFragment();
     const article = document.createElement('article');
     article.classList.add('cart__item');
-    article.setAttribute('data-id', productInCart._id);
-    article.setAttribute('data-color', productInCart.color);
+    article.setAttribute('data-id', product._id);
+    article.setAttribute('data-color', product.color);
     
     // Fragment contenant la partie image
     const productImageFragment = createImageFragment(product);
@@ -81,7 +89,7 @@ function displayCartProduct(product, productInCart){
     cartItemContent.classList.add('cart__item__content');
     
     // Fragment de description du contenu
-    const cartItemContentDescription = createItemDescriptionFragment(product, productInCart);
+    const cartItemContentDescription = createItemDescriptionFragment(product);
     cartItemContent.appendChild(cartItemContentDescription);
     
     // Fragment de contenu du produit - couleur
@@ -89,7 +97,7 @@ function displayCartProduct(product, productInCart){
     cartItemContentSettings.classList.add('cart__item__content__settings');
     
     // Fragment de contenu du produit - quantité
-    const cartItemQuantitySettings = createItemQuantitySettings(productInCart);
+    const cartItemQuantitySettings = createItemQuantitySettings(product);
     cartItemContentSettings.appendChild(cartItemQuantitySettings);
     
     // Bouton de suppression (inactif pour l'instant)
@@ -136,7 +144,7 @@ function createImageFragment(product){
  * @param {Object} productInCart - contains non-static information about the product (the chosen color and the quantity)
  * @returns an HTML fragment containing a description of the product to be displayed
  */
-function createItemDescriptionFragment(product, productInCart){
+function createItemDescriptionFragment(product){
     const cartItemContentDescription = document.createElement('div');
     cartItemContentDescription.classList.add('cart__item__content__description');
     
@@ -144,7 +152,7 @@ function createItemDescriptionFragment(product, productInCart){
     productName.innerHTML = product.name;
     
     const productInCartColor = document.createElement('p');
-    productInCartColor.innerHTML = productInCart.color;
+    productInCartColor.innerHTML = product.color;
     
     const productPrice = document.createElement('p');
     productPrice.innerHTML = product.price + " €";
@@ -189,8 +197,8 @@ function createItemQuantitySettings(productInCart) {
 function displayAllItems() {
     totalNbItems = 0;
     
-    if(productsInCart.length > 0){
-         productsInCart.forEach(product => {
+    if(cartProducts.length > 0){
+         cartProducts.forEach(product => {
             totalNbItems = Number(totalNbItems) + Number(product.quantity);
         }); 
     } else {
@@ -203,9 +211,9 @@ function displayAllItems() {
 function displayTotalPrice(){
     let totalCartPrice = 0;
 
-    if(productsInCart.length > 0){
-        productsInCart.forEach(product => {
-            totalCartPrice += getProductPrice(product._id) * product.quantity;
+    if(cartProducts.length > 0){
+        cartProducts.forEach(product => {
+            totalCartPrice += product.price * product.quantity;
        }); 
    } else {
        totalCartPrice = 0;
@@ -214,18 +222,13 @@ function displayTotalPrice(){
     document.getElementById('totalPrice').innerHTML = totalCartPrice;
 }
 
-// Getter pour prix de kanap
-function getProductPrice(productId){
-    return productsInAPI.find(product => product._id === productId).price;
-}
-
 function deleteProductFromCart(productId, productColor) {
     // Aussi supprimer l'élément du localStorage (utiliser id)
-    const productToDelete = productsInCart.find(product => product._id === productId && product.color === productColor);
-    const index = productsInCart.indexOf(productToDelete);
+    const productToDelete = cartProducts.find(product => product._id === productId && product.color === productColor);
+    const index = cartProducts.indexOf(productToDelete);
     
-    productsInCart.splice(index, 1);
-    productsInAPI.splice(index, 1);
+    cartProducts.splice(index, 1);
+    // productsInAPI.splice(index, 1);
     
-    saveToLocalStorage(productsInCart);
+    saveToLocalStorage(cartProducts);
 }
