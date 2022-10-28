@@ -21,7 +21,7 @@ let totalNbItems = 0;
 
     // merging des 2 tableaux
     productsInCart.forEach((product, index) => cartProducts[index] = {...productsInCart[index], ...productsInAPI[index]});
-    console.log(cartProducts);
+    // console.log(cartProducts);
     
     cartProducts.forEach((product) => displayCartProduct(product));
     displayAllItems();
@@ -61,34 +61,27 @@ let totalNbItems = 0;
             } 
             // on remet le tableau dans le localStorage
             saveToLocalStorage(allCartItems);
-
-            
-            // displayAllItems();
-            // displayTotalPrice();
             location.reload();
             
         });
         
     });
+    
+    //---------- Formulaire de commande ----------//
+    
+    let contact = {};
+    let allContacts = [];
 
-    //---------- Listeners pour le formulaire ----------//
-
-    let contact = {
-        firstname: null,
-        lastname: null,
-        address: null,
-        city: null,
-        email: null,
-    }
+    // -- Listeners pour le formulaire
 
     let firstNameField = document.getElementById('firstName');
-    let nameRegEx = /^[a-zA-Zàçèéüä]{2,30}$/; // [\-][a-zA-Zàçèé] gestion des prénoms et noms composés ?
-    //console.log('salut c\'est ' + firstNameRegEx.test('Jean-Paul'));
+    let nameRegEx = /^[a-zA-Zàçèéüä]{2,30}$/; 
+
     firstNameField.addEventListener('change', () => {
         if(nameRegEx.test(firstNameField.value)){
             console.log('good');
             document.getElementById('firstNameErrorMsg').innerHTML = null;
-            contact.firstname = firstNameField.value;
+            contact.firstName = firstNameField.value;
         } else {
             console.log('not good');
             document.getElementById('firstNameErrorMsg').innerHTML = 'Veuiller saisier un prénom valide';
@@ -101,7 +94,7 @@ let totalNbItems = 0;
         if(nameRegEx.test(lastNameField.value)){
             console.log('good');
             document.getElementById('lastNameErrorMsg').innerHTML = null;
-            contact.lastname = lastNameField.value;
+            contact.lastName = lastNameField.value;
         } else {
             console.log('not good');
             document.getElementById('lastNameErrorMsg').innerHTML = 'Veuiller saisier un nom valide';
@@ -109,7 +102,7 @@ let totalNbItems = 0;
     });
 
     let addressField = document.getElementById('address');
-    let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä\ ]+{2,50}$/
+    let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä\ ]{2,50}$/
 
     addressField.addEventListener('change', () => {
         if(addressRegEx.test(addressField.value)){
@@ -139,11 +132,19 @@ let totalNbItems = 0;
         if(emailRegEx.test(emailField.value)){
             document.getElementById('emailErrorMsg').innerHTML = null;
             contact.email = emailField.value;
-            console.log(contact);
         } else {
             document.getElementById('emailErrorMsg').innerHTML = 'Veuillez saisir une adresse mail valide';
         }
     });
+
+    let formCompleted = allFormFieldsComplete(firstNameField.value, lastNameField.value, addressField.value, cityField.value, emailField.value);
+    
+    console.log(allContacts);
+
+    document.getElementById('order').addEventListener('click', () => {
+    });
+    
+    
 
 })();
 
@@ -324,6 +325,30 @@ function deleteProductFromCart(productId, productColor) {
     saveToLocalStorage(cartProducts);
 }
 
-function regExNameField(){
+/**
+ * Checks the field values of the contact form for completion
+ * 
+ * @param {String} firstNameField - the first name field value
+ * @param {String} lastNameField - the last name field value
+ * @param {String} addressField - the address field value
+ * @param {String} cityField - the city field value
+ * @param {String} emailField - the email field value
+ * @returns true if all the fields are completed, false otherwise
+ */
+function allFormFieldsComplete(firstNameField, lastNameField, addressField, cityField, emailField){
+    if(firstNameField && lastNameField && addressField && cityField && emailField){
+        return true;
+    } else {
+        return false;
+    }
+}
 
+function createContact(){
+    return {
+        firstName: firstNameField.value,
+        lastName: lastNameField.value,
+        address: addressField.value,
+        city: cityField.value,
+        email: emailField.value,
+    }
 }
