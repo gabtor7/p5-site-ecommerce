@@ -52,10 +52,16 @@ let totalNbItems = 0;
             let productId = itemQuantityBtn.closest('article').dataset.id;
             // on trouve le porduit correspondant dans la tableau
             let itemToUpdate = allCartItems.find(product => product._id === productId);
-            // on change la quantité 
-            itemToUpdate.quantity = itemQuantityBtn.value;
+            // on change la quantité
+            if(itemQuantityBtn.value < 101){
+                itemToUpdate.quantity = itemQuantityBtn.value;
+            } else {
+                itemQuantityBtn.value = 100;
+                alert('Quantité saisie trop élevée. Une quantité maximale de 100 sera appliquée')
+            } 
             // on remet le tableau dans le localStorage
             saveToLocalStorage(allCartItems);
+
             
             // displayAllItems();
             // displayTotalPrice();
@@ -65,14 +71,77 @@ let totalNbItems = 0;
         
     });
 
+    //---------- Listeners pour le formulaire ----------//
+
+    let contact = {
+        firstname: null,
+        lastname: null,
+        address: null,
+        city: null,
+        email: null,
+    }
+
     let firstNameField = document.getElementById('firstName');
-    let firstNameRegEx = /[a-zA-Zàçèé]{2,30}$/; // [\-][a-zA-Zàçèé] gestion des prénoms et noms composés ?
+    let nameRegEx = /^[a-zA-Zàçèéüä]{2,30}$/; // [\-][a-zA-Zàçèé] gestion des prénoms et noms composés ?
     //console.log('salut c\'est ' + firstNameRegEx.test('Jean-Paul'));
     firstNameField.addEventListener('change', () => {
-        if( firstNameRegEx.test(firstNameField.value) ){
+        if(nameRegEx.test(firstNameField.value)){
             console.log('good');
+            document.getElementById('firstNameErrorMsg').innerHTML = null;
+            contact.firstname = firstNameField.value;
         } else {
             console.log('not good');
+            document.getElementById('firstNameErrorMsg').innerHTML = 'Veuiller saisier un prénom valide';
+        }
+    });
+
+    let lastNameField = document.getElementById('lastName');
+    
+    lastNameField.addEventListener('change', () => {
+        if(nameRegEx.test(lastNameField.value)){
+            console.log('good');
+            document.getElementById('lastNameErrorMsg').innerHTML = null;
+            contact.lastname = lastNameField.value;
+        } else {
+            console.log('not good');
+            document.getElementById('lastNameErrorMsg').innerHTML = 'Veuiller saisier un nom valide';
+        }
+    });
+
+    let addressField = document.getElementById('address');
+    let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä\ ]+{2,50}$/
+
+    addressField.addEventListener('change', () => {
+        if(addressRegEx.test(addressField.value)){
+            document.getElementById('addressErrorMsg').innerHTML = null;
+            contact.address = addressField.value;
+        } else {
+            document.getElementById('addressErrorMsg').innerHTML = 'L\'adresse saisie n\'est pas valide.\nEx.: 123 rue de la Paix';
+        }
+
+    });
+
+    let cityField = document.getElementById('city');
+    let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
+
+    cityField.addEventListener('change', () => {
+        if(cityRegEx.test(cityField.value)){
+            document.getElementById('cityErrorMsg').innerHTML = null;
+            contact.city = cityField.value;
+        } else {
+            document.getElementById('cityErrorMsg').innerHTML = 'Veuillez saisir un nom de Ville valide';
+        }
+    });
+
+    let emailField = document.getElementById('email');
+    let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/
+    emailField.addEventListener('change', () => {
+        if(emailRegEx.test(emailField.value)){
+            document.getElementById('emailErrorMsg').innerHTML = null;
+            contact.email = emailField.value;
+            console.log(contact);
+        } else {
+            document.getElementById('emailErrorMsg').innerHTML = 'Veuillez saisir une adresse mail valide';
         }
     });
 

@@ -93,10 +93,15 @@ async function createProduct() {
 function processLocalStorage(kanap) {
     let products = getFromLocalStorage();
     let productCart = products.find(product => product._id === id && product.color === colors.value);
+    //let totalWithProdInCart = quantityInCart(productCart._id, productCart.color)
 
     // Vérification et création d'un panier dans le localStorage s'il n'y en a pas, puis ajout du produit
     if (productCart) {
         productCart.quantity = productCart.quantity + kanap.quantity;
+        if(productCart.quantity > 100){
+            alert('La quantité totale de cet article dépasse 100. Les articles en trop seront ignorés.');
+            productCart.quantity = 100;
+        }
     } else {
         products.push(kanap);
     }

@@ -8,16 +8,18 @@
 }
 
 /**
- *
- * @return {any|*[]}
+ * Gets the cart from LocalStorage
+ * 
+ * @return {any|*[]} - the cart in JSON format, if it exists
  */
 export function getFromLocalStorage() {
     return localStorageHasKey() ? JSON.parse(localStorage.getItem('kanapCart')) : [];
 }
 
 /**
- *
- * @return {string}
+ * Checks if the cart we want to use exists
+ * 
+ * @return {string} - the cart, if it exists. Otherwise returns a null value.
  */
 export function localStorageHasKey() {
     return localStorage.getItem('kanapCart');

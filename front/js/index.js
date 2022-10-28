@@ -9,7 +9,7 @@ fetch("http://localhost:3000/api/products")
   displayProducts(products);
 })
 .catch(function(err) {
-  alert('une erreur est survenue');
+  //alert('une erreur est survenue');
 });
 
 function displayProducts(products){
