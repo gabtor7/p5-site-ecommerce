@@ -24,3 +24,7 @@ export function getFromLocalStorage() {
 export function localStorageHasKey() {
     return localStorage.getItem('kanapCart');
 }
+
+export function clearLocalStorage(){
+    localStorage.clear();
+}

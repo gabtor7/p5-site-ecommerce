@@ -19,16 +19,15 @@ let totalNbItems = 0;
     productsInAPI.forEach((product) => delete product.colors);
     productsInAPI.forEach((product) => delete product._id);
 
-    // merging des 2 tableaux
+    // Merging des 2 tableaux
     productsInCart.forEach((product, index) => cartProducts[index] = {...productsInCart[index], ...productsInAPI[index]});
-    // console.log(cartProducts);
     
     cartProducts.forEach((product) => displayCartProduct(product));
     displayAllItems();
     displayTotalPrice();
     
-    const allDeleteBtns = document.querySelectorAll('.deleteItem');
-    const itemQuantityBtns = document.querySelectorAll('.itemQuantity');
+    let allDeleteBtns = document.querySelectorAll('.deleteItem');
+    let itemQuantityBtns = document.querySelectorAll('.itemQuantity');
     
     allDeleteBtns.forEach(deleteBtn => {
             deleteBtn.addEventListener('click', () => {
@@ -46,22 +45,22 @@ let totalNbItems = 0;
     
     itemQuantityBtns.forEach(itemQuantityBtn => {
         itemQuantityBtn.addEventListener('change', () => {
-            // update de localStorage, on obtient le tableau
-            let allCartItems = getFromLocalStorage();
-            // trouver l'article le plus proche, get l'id du produit
+            // Trouver l'article le plus proche, get l'id du produit
             let productId = itemQuantityBtn.closest('article').dataset.id;
-            // on trouve le porduit correspondant dans la tableau
-            let itemToUpdate = allCartItems.find(product => product._id === productId);
-            // on change la quantité
+            // On trouve le porduit correspondant dans la tableau
+            let itemToUpdate = cartProducts.find(product => product._id === productId);
+            // On change la quantité
             if(itemQuantityBtn.value < 101){
-                itemToUpdate.quantity = itemQuantityBtn.value;
+                itemToUpdate.quantity = Number(itemQuantityBtn.value);
             } else {
                 itemQuantityBtn.value = 100;
                 alert('Quantité saisie trop élevée. Une quantité maximale de 100 sera appliquée')
             } 
-            // on remet le tableau dans le localStorage
-            saveToLocalStorage(allCartItems);
-            location.reload();
+            // On remet le tableau dans le localStorage
+            saveToLocalStorage(cartProducts);
+
+            displayAllItems();
+            displayTotalPrice();
             
         });
         
@@ -79,30 +78,27 @@ let totalNbItems = 0;
 
     firstNameField.addEventListener('change', () => {
         if(nameRegEx.test(firstNameField.value)){
-            console.log('good');
             document.getElementById('firstNameErrorMsg').innerHTML = null;
             contact.firstName = firstNameField.value;
         } else {
-            console.log('not good');
             document.getElementById('firstNameErrorMsg').innerHTML = 'Veuiller saisier un prénom valide';
         }
-    });
+    })
 
     let lastNameField = document.getElementById('lastName');
     
     lastNameField.addEventListener('change', () => {
         if(nameRegEx.test(lastNameField.value)){
-            console.log('good');
             document.getElementById('lastNameErrorMsg').innerHTML = null;
             contact.lastName = lastNameField.value;
         } else {
-            console.log('not good');
             document.getElementById('lastNameErrorMsg').innerHTML = 'Veuiller saisier un nom valide';
         }
-    });
+    })
 
     let addressField = document.getElementById('address');
-    let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä\ ]{2,50}$/
+    let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä]{2,50}[\ ][a-zA-Zàçèéüä\ ]{2,50}$/;
+    // Le format d'adresse choisi est [N°][rue/route/chemin][nom de la rue/route/chemin]
 
     addressField.addEventListener('change', () => {
         if(addressRegEx.test(addressField.value)){
@@ -112,7 +108,7 @@ let totalNbItems = 0;
             document.getElementById('addressErrorMsg').innerHTML = 'L\'adresse saisie n\'est pas valide.\nEx.: 123 rue de la Paix';
         }
 
-    });
+    })
 
     let cityField = document.getElementById('city');
     let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
@@ -124,7 +120,7 @@ let totalNbItems = 0;
         } else {
             document.getElementById('cityErrorMsg').innerHTML = 'Veuillez saisir un nom de Ville valide';
         }
-    });
+    })
 
     let emailField = document.getElementById('email');
     let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/
@@ -135,13 +131,39 @@ let totalNbItems = 0;
         } else {
             document.getElementById('emailErrorMsg').innerHTML = 'Veuillez saisir une adresse mail valide';
         }
-    });
+    })
 
-    let formCompleted = allFormFieldsComplete(firstNameField.value, lastNameField.value, addressField.value, cityField.value, emailField.value);
+    let fields = document.querySelectorAll('.cart__order__form__question');
+    fields.forEach(field => {
+        field.addEventListener('change', () => {
+            if(allFormFieldsComplete()){
+                document.getElementById('order').disabled = false;
+            } else {
+                document.getElementById('order').disabled = true;
+            }
+        })
+    })
     
-    console.log(allContacts);
-
-    document.getElementById('order').addEventListener('click', () => {
+    //let formCompleted = allFormFieldsComplete();
+    
+    document.getElementById('order').addEventListener('click', (e) => {
+        e.preventDefault();
+        let products = getFromLocalStorage().map(product => product._id);
+        let postRequestData = {
+            contact: {
+                firstName: contact.firstName,
+                lastName: contact.lastName,
+                address: contact.address,
+                city: contact.city,
+                email: contact.email,
+            },
+            products: products,
+        }
+        let postResponse = postOrderConfirmation(postRequestData);
+        Promise.resolve(postResponse)
+        .then((value) => window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`);
+        
+        //window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${postResponse.orderId}`;
     });
     
     
@@ -328,27 +350,34 @@ function deleteProductFromCart(productId, productColor) {
 /**
  * Checks the field values of the contact form for completion
  * 
- * @param {String} firstNameField - the first name field value
- * @param {String} lastNameField - the last name field value
- * @param {String} addressField - the address field value
- * @param {String} cityField - the city field value
- * @param {String} emailField - the email field value
- * @returns true if all the fields are completed, false otherwise
+ * @returns true if all the form fields are completed, false otherwise
  */
-function allFormFieldsComplete(firstNameField, lastNameField, addressField, cityField, emailField){
-    if(firstNameField && lastNameField && addressField && cityField && emailField){
+function allFormFieldsComplete(){
+    if(document.getElementById('firstName').value && document.getElementById('lastName').value && document.getElementById('address').value && document.getElementById('city').value && document.getElementById('email').value){
         return true;
     } else {
         return false;
     }
 }
 
-function createContact(){
-    return {
-        firstName: firstNameField.value,
-        lastName: lastNameField.value,
-        address: addressField.value,
-        city: cityField.value,
-        email: emailField.value,
-    }
+async function postOrderConfirmation(postRequestData){
+    return await fetch('http://localhost:3000/api/products/order', {
+
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(postRequestData),
+
+    }).then(function(res){
+        console.log('hello');
+        if(res.ok){
+            console.log('isok');
+            return res.json();
+        } else {
+            console.log('res not ok');
+        }
+    }).then(function(data){
+        return data;
+    });
 }
