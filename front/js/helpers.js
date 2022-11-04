@@ -25,6 +25,9 @@ export function localStorageHasKey() {
     return localStorage.getItem('kanapCart');
 }
 
+/**
+ * Clear the localStorage, used when the order has been passed
+ */
 export function clearLocalStorage(){
     localStorage.clear();
 }

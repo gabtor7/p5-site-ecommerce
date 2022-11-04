@@ -4,4 +4,4 @@ const orderId = searchParams.get('orderId');
 document.getElementById('orderId').textContent = orderId;
 
 // on n'a plus besoin du localStorage, on le clear
-// clearLocalStorage();
+clearLocalStorage();

@@ -6,6 +6,11 @@ let productsInAPI;
 let cartProducts = [];
 let totalNbItems = 0;
 
+let nameRegEx = /^[a-zA-Zàçèéüä]{2,30}$/; 
+let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä]{2,50}[\ ][a-zA-Zàçèéüä\ ]{2,50}$/;
+let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
+let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
+
 (async function createAll() {
     if (!productsInCart) return;
     
@@ -70,11 +75,10 @@ let totalNbItems = 0;
     
     let contact = {};
     let allContacts = [];
-
+    
     // -- Listeners pour le formulaire
-
+    
     let firstNameField = document.getElementById('firstName');
-    let nameRegEx = /^[a-zA-Zàçèéüä]{2,30}$/; 
 
     firstNameField.addEventListener('change', () => {
         if(nameRegEx.test(firstNameField.value)){
@@ -97,7 +101,6 @@ let totalNbItems = 0;
     })
 
     let addressField = document.getElementById('address');
-    let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä]{2,50}[\ ][a-zA-Zàçèéüä\ ]{2,50}$/;
     // Le format d'adresse choisi est [N°][rue/route/chemin][nom de la rue/route/chemin]
 
     addressField.addEventListener('change', () => {
@@ -105,13 +108,12 @@ let totalNbItems = 0;
             document.getElementById('addressErrorMsg').innerHTML = null;
             contact.address = addressField.value;
         } else {
-            document.getElementById('addressErrorMsg').innerHTML = 'L\'adresse saisie n\'est pas valide.\nEx.: 123 rue de la Paix';
+            document.getElementById('addressErrorMsg').innerHTML = 'L\'adresse saisie n\'est pas valide. Ex.: 123 rue de la Paix';
         }
 
     })
 
     let cityField = document.getElementById('city');
-    let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
 
     cityField.addEventListener('change', () => {
         if(cityRegEx.test(cityField.value)){
@@ -123,7 +125,6 @@ let totalNbItems = 0;
     })
 
     let emailField = document.getElementById('email');
-    let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/
     emailField.addEventListener('change', () => {
         if(emailRegEx.test(emailField.value)){
             document.getElementById('emailErrorMsg').innerHTML = null;
@@ -138,6 +139,7 @@ let totalNbItems = 0;
         field.addEventListener('change', () => {
             if(allFormFieldsComplete()){
                 document.getElementById('order').disabled = false;
+                console.log(typeof getFromLocalStorage().map(product => product._id));
             } else {
                 document.getElementById('order').disabled = true;
             }
@@ -149,21 +151,23 @@ let totalNbItems = 0;
     document.getElementById('order').addEventListener('click', (e) => {
         e.preventDefault();
         let products = getFromLocalStorage().map(product => product._id);
-        let postRequestData = {
-            contact: {
-                firstName: contact.firstName,
-                lastName: contact.lastName,
-                address: contact.address,
-                city: contact.city,
-                email: contact.email,
-            },
-            products: products,
+        let postRequestData;
+        if(typeof contact == 'object' && typeof products == 'object'){
+            postRequestData = {
+                contact: {
+                    firstName: contact.firstName,
+                    lastName: contact.lastName,
+                    address: contact.address,
+                    city: contact.city,
+                    email: contact.email,
+                },
+                products: products,
+            }
         }
+
         let postResponse = postOrderConfirmation(postRequestData);
         Promise.resolve(postResponse)
         .then((value) => window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`);
-        
-        //window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${postResponse.orderId}`;
     });
     
     
@@ -348,18 +352,28 @@ function deleteProductFromCart(productId, productColor) {
 }
 
 /**
- * Checks the field values of the contact form for completion
+ * Checks the field values of the contact form for completion and regex accuracy
  * 
- * @returns true if all the form fields are completed, false otherwise
+ * @returns true if all the form fields are correctly completed, false otherwise
  */
 function allFormFieldsComplete(){
-    if(document.getElementById('firstName').value && document.getElementById('lastName').value && document.getElementById('address').value && document.getElementById('city').value && document.getElementById('email').value){
+    if(document.getElementById('firstName').value.match(nameRegEx)
+    && document.getElementById('lastName').value.match(nameRegEx)
+    && document.getElementById('address').value.match(addressRegEx)
+    && document.getElementById('city').value.match(cityRegEx)
+    && document.getElementById('email').value.match(emailRegEx)){
         return true;
     } else {
         return false;
     }
 }
 
+/**
+ * Does a POST request using contact and products data
+ * 
+ * @param {Object} postRequestData - the body of the request in JSON format, contains contact information and the list of products in the cart
+ * @returns a Promise containing the contact information, cart items and orderId
+ */
 async function postOrderConfirmation(postRequestData){
     return await fetch('http://localhost:3000/api/products/order', {
 
@@ -372,10 +386,8 @@ async function postOrderConfirmation(postRequestData){
     }).then(function(res){
         console.log('hello');
         if(res.ok){
-            console.log('isok');
             return res.json();
         } else {
-            console.log('res not ok');
         }
     }).then(function(data){
         return data;
