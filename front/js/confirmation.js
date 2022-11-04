@@ -1,7 +1,8 @@
-const searchParams = new URLSearchParams(window.location.search);
-const orderId = searchParams.get('orderId');
+import { clearLocalStorage } from "./helpers.js";
 
-document.getElementById('orderId').textContent = orderId;
+const searchParams = new URLSearchParams(window.location.search);
+
+document.getElementById('orderId').textContent = searchParams.get('orderId');;
 
 // on n'a plus besoin du localStorage, on le clear
 clearLocalStorage();
