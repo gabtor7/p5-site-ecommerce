@@ -52,8 +52,9 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
         itemQuantityBtn.addEventListener('change', () => {
             // Trouver l'article le plus proche, get l'id du produit
             let productId = itemQuantityBtn.closest('article').dataset.id;
+            let productColor = itemQuantityBtn.closest('article').dataset.color;
             // On trouve le porduit correspondant dans la tableau
-            let itemToUpdate = cartProducts.find(product => product._id === productId);
+            let itemToUpdate = cartProducts.find(product => product._id === productId && product.color === productColor);
             // On change la quantité
             if(itemQuantityBtn.value < 101){
                 itemToUpdate.quantity = Number(itemQuantityBtn.value);
@@ -74,7 +75,6 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
     //---------- Formulaire de commande ----------//
     
     let contact = {};
-    let allContacts = [];
     
     // -- Listeners pour le formulaire
     
@@ -166,8 +166,6 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
         }
 
         let postResponse = postOrderConfirmation(postRequestData);
-        Promise.resolve(postResponse)
-        .then((value) => window.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?orderId=${value.orderId}`);
     });
     
     
@@ -374,8 +372,8 @@ function allFormFieldsComplete(){
  * @param {Object} postRequestData - the body of the request in JSON format, contains contact information and the list of products in the cart
  * @returns a Promise containing the contact information, cart items and orderId
  */
-async function postOrderConfirmation(postRequestData){
-    return await fetch('http://localhost:3000/api/products/order', {
+function postOrderConfirmation(postRequestData){
+    return fetch('http://localhost:3000/api/products/order', {
 
         method: 'POST',
         headers: {
@@ -383,13 +381,8 @@ async function postOrderConfirmation(postRequestData){
         },
         body: JSON.stringify(postRequestData),
 
-    }).then(function(res){
-        console.log('hello');
-        if(res.ok){
-            return res.json();
-        } else {
-        }
-    }).then(function(data){
-        return data;
+    }).then((res) => res.json())
+    .then(function(data){
+        window.location.href = "confirmation.html?orderId=" + data.orderId;
     });
 }

@@ -8,12 +8,18 @@ const addBtn = document.getElementById('addToCart');
 const quantity = document.getElementById('itemQuantity');
 const colors = document.getElementById('color-select');
 
+/**
+ * Enables the Add to cart button
+ */
 function enableAddBtn(){
     if(qtyIsOk && colorIsOk){
         addBtn.disabled = false;
     }
 }
 
+/**
+ * Creates a products and adds its data in the corresponding fields
+ */
 async function createProduct() {
     product = await fetch(`http://localhost:3000/api/products/${id}`).then(function(res){
         if (res.ok) {

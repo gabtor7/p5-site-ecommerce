@@ -23,6 +23,11 @@ function displayProducts(products){
   })
 }
 
+/**
+ * Creates an HTML fragment for a product with all its data 
+ * @param {Object} product - the product to be displayed
+ * @returns an HTML fragment for said product
+ */
 function createProduct(product){
 
   const articleFragment = document.createDocumentFragment();
