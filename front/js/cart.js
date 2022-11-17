@@ -11,6 +11,9 @@ let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä]{2,50}[\ ][a-zA-Zàçèé
 let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
 let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 
+/**
+ * JSDoc et renommer fonction (createProducts?)
+ */
 (async function createAll() {
     if (!productsInCart) return;
     
@@ -31,6 +34,7 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
     displayAllItems();
     displayTotalPrice();
     
+    // -- a partir d'ici, refaire nouvelle fonction d'init
     let allDeleteBtns = document.querySelectorAll('.deleteItem');
     let itemQuantityBtns = document.querySelectorAll('.itemQuantity');
     
@@ -165,7 +169,7 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
             }
         }
 
-        let postResponse = postOrderConfirmation(postRequestData);
+        postOrderConfirmation(postRequestData);
     });
     
     
@@ -373,7 +377,7 @@ function allFormFieldsComplete(){
  * @returns a Promise containing the contact information, cart items and orderId
  */
 function postOrderConfirmation(postRequestData){
-    return fetch('http://localhost:3000/api/products/order', {
+    fetch('http://localhost:3000/api/products/order', {
 
         method: 'POST',
         headers: {

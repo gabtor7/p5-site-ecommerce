@@ -51,6 +51,9 @@ async function createProduct() {
     }
 }
 
+/**
+ * JSDOC
+ */
 (async function init() {
     await createProduct();
 

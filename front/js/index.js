@@ -9,9 +9,13 @@ fetch("http://localhost:3000/api/products")
   displayProducts(products);
 })
 .catch(function(err) {
-  //alert('une erreur est survenue');
+  alert('Impossible d\'afficher les produits, veuillez réessayer ultérieurement.');
 });
 
+/**
+ * Adds all products to the corresponding HTML element for display
+ * @param {Array} products 
+ */
 function displayProducts(products){
   
   let items = document.getElementById('items');
