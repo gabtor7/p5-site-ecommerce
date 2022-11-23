@@ -12,7 +12,7 @@ let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
 let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 
 /**
- * JSDoc et renommer fonction (createProducts?)
+ * Creates and displays all products on the page
  */
 (async function createAll() {
     if (!productsInCart) return;
@@ -177,7 +177,7 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
 })();
 
 /**
- * Function displaying a product and its data on the page
+ * Displays a product and its data on the page
  * 
  * @param {Object} product - product to be displayed
  * @param {Object} productInCart - see above
@@ -230,7 +230,7 @@ function displayCartProduct(product){
 }
 
 /**
- * Function creating a fragment that will contain the image part of the product to be displayed in tha cart
+ * Creates a fragment that will contain the image part of the product to be displayed in tha cart
  *
  * @param {Object} product - the product whose image will be displayed
  * @returns an HTML fragment of the image section

@@ -52,7 +52,7 @@ async function createProduct() {
 }
 
 /**
- * JSDOC
+ * Displays a product and initialises the quantity and color fields
  */
 (async function init() {
     await createProduct();
