@@ -64,11 +64,10 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
                 itemToUpdate.quantity = Number(itemQuantityBtn.value);
             } else {
                 itemQuantityBtn.value = 100;
-                alert('Quantité saisie trop élevée. Une quantité maximale de 100 sera appliquée')
+                alert('Quantité saisie trop élevée. Une quantité maximale de 100 sera appliquée');
             } 
             // On remet le tableau dans le localStorage
             saveToLocalStorage(cartProducts);
-
             displayAllItems();
             displayTotalPrice();
             
@@ -149,9 +148,7 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
             }
         })
     })
-    
-    //let formCompleted = allFormFieldsComplete();
-    
+        
     document.getElementById('order').addEventListener('click', (e) => {
         e.preventDefault();
         let products = getFromLocalStorage().map(product => product._id);
