@@ -4,6 +4,10 @@
  * @param {Array} products - the tab containing all kanaps, will replace the current one
  */
  export function saveToLocalStorage(products) {
+    products.forEach((product) => delete product.altTxt);
+    products.forEach((product) => delete product.description);
+    products.forEach((product) => delete product.imageUrl);
+    products.forEach((product) => delete product.name);
     localStorage.setItem('kanapCart', JSON.stringify(products));
 }
 

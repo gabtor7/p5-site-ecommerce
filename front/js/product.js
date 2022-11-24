@@ -18,7 +18,7 @@ function enableAddBtn(){
 }
 
 /**
- * Creates a products and adds its data in the corresponding fields
+ * Creates a products and adds its data to the corresponding fields
  */
 async function createProduct() {
     product = await fetch(`http://localhost:3000/api/products/${id}`).then(function(res){

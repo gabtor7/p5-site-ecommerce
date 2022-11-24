@@ -6,7 +6,7 @@ let productsInAPI;
 let cartProducts = [];
 let totalNbItems = 0;
 
-let nameRegEx = /^[a-zA-Zàçèéüä]{2,30}$/; 
+let nameRegEx = /^[a-zA-Zàçèéüä\'-]{2,30}$/; 
 let addressRegEx = /^[0-9]{1,5}[\ ][a-zA-Zàçèéüä]{2,50}[\ ][a-zA-Zàçèéüä\ ]{2,50}$/;
 let cityRegEx = /^[A-Za-zéàçèüâêîôû-]{1,50}$/;
 let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
@@ -25,7 +25,7 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
     );
 
     productsInAPI.forEach((product) => delete product.colors);
-    productsInAPI.forEach((product) => delete product._id);
+    //productsInAPI.forEach((product) => delete product._id);
 
     // Merging des 2 tableaux
     productsInCart.forEach((product, index) => cartProducts[index] = {...productsInCart[index], ...productsInAPI[index]});
@@ -55,6 +55,8 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
     itemQuantityBtns.forEach(itemQuantityBtn => {
         itemQuantityBtn.addEventListener('change', () => {
             // Trouver l'article le plus proche, get l'id du produit
+            let cartProductsNoPrice = cartProducts;
+            cartProductsNoPrice.forEach((product) => delete product.price);
             let productId = itemQuantityBtn.closest('article').dataset.id;
             let productColor = itemQuantityBtn.closest('article').dataset.color;
             // On trouve le porduit correspondant dans la tableau
@@ -67,9 +69,9 @@ let emailRegEx = /^[a-zA-z0-9.-_]+[@]{1}[a-zA-z0-9.-_]+[.]{1}[a-z]{2,10}$/;
                 alert('Quantité saisie trop élevée. Une quantité maximale de 100 sera appliquée');
             } 
             // On remet le tableau dans le localStorage
-            saveToLocalStorage(cartProducts);
             displayAllItems();
             displayTotalPrice();
+            saveToLocalStorage(cartProductsNoPrice);
             
         });
         
@@ -323,7 +325,8 @@ function displayTotalPrice(){
 
     if(cartProducts.length > 0){
         cartProducts.forEach(product => {
-            totalCartPrice += product.price * product.quantity;
+            let item = productsInAPI.find(prod => prod._id === product._id);
+            totalCartPrice += item.price * product.quantity;
        }); 
    } else {
        totalCartPrice = 0;

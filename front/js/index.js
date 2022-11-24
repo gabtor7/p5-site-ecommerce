@@ -60,5 +60,7 @@ function createProduct(product){
   article.appendChild(heading);
   article.appendChild(pg);
 
-  return anchor;
+  articleFragment.appendChild(anchor);
+
+  return articleFragment;
 }
